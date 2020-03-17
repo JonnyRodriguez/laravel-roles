@@ -2,8 +2,11 @@
 
 namespace jeremykenedy\LaravelRoles\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use jeremykenedy\Database\Eloquent\Model;
+use jeremykenedy\Database\Eloquent\SoftDeletes;
+
+//use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\SoftDeletes;
 use jeremykenedy\LaravelRoles\Contracts\RoleHasRelations as RoleHasRelationsContract;
 use jeremykenedy\LaravelRoles\Traits\DatabaseTraits;
 use jeremykenedy\LaravelRoles\Traits\RoleHasRelations;
@@ -53,7 +56,7 @@ class Role extends Model implements RoleHasRelationsContract
      * @var array
      */
     protected $casts = [
-        'id'            => 'integer',
+        'id'            => 'string',
         'name'          => 'string',
         'slug'          => 'string',
         'description'   => 'string',

@@ -2,7 +2,8 @@
 
 namespace jeremykenedy\LaravelRoles\Contracts;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use jeremykenedy\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 interface PermissionHasRelations
 {
