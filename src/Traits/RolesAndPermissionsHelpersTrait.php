@@ -426,7 +426,7 @@ trait RolesAndPermissionsHelpersTrait
         $user_ids = array_map(function ($id) {
             return new ObjectId($id);
         }, array_unique($user_ids));
-        $users = DB::table('user')->where(['_id' => ['$in' => $user_ids]])->get();
+        $users = DB::table('users')->where(['_id' => ['$in' => $user_ids]])->get();
         return $users;
         /*$roles = $permission->roles()->get();
         $users = [];
