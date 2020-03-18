@@ -3,7 +3,7 @@
 namespace jeremykenedy\LaravelRoles\Models;
 
 use jeremykenedy\LaravelRoles\Database\Eloquent\Model;
-use jeremykenedy\LaravelRoles\Database\Eloquent\SoftDeletes;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 //use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Database\Eloquent\SoftDeletes;
