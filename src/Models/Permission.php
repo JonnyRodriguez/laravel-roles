@@ -83,4 +83,8 @@ class Permission extends Model implements PermissionHasRelationsContract
         parent::__construct($attributes);
         $this->table = config('roles.permissionsTable');
     }
+
+    static function all($columns = []) {
+        return self::where('_id','!=', '0')->get();
+    }
 }
