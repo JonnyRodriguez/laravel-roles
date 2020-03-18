@@ -7,7 +7,7 @@ use Jenssegers\Mongodb\Eloquent\Model as dbModel;
 
 class Model extends dbModel
 {
-    static function all() {
+    static function all($columns = []) {
         return self::where('_id','!=', '0')->get();
     }
 }
