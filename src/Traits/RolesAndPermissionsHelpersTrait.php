@@ -418,7 +418,7 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getAllUsersForPermission($permission)
     {
-        $roles = DB::table('roles')->where('permission_ids', $permission)->pluck('user_ids');
+        $roles = DB::table('roles')->where('permission_ids', $permission->_id)->pluck('user_ids');
         $user_ids = [];
         foreach ($roles as $role)
             $user_ids = array_merge($user_ids, $role);
