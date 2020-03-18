@@ -84,7 +84,4 @@ class Role extends Model implements RoleHasRelationsContract
         $this->table = config('roles.rolesTable');
     }
 
-    static function all($columns = []) {
-        return self::where('_id','!=', '0')->get();
-    }
 }
