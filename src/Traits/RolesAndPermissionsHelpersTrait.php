@@ -128,7 +128,7 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getDeletedPermission($id)
     {
-        $item = config('roles.models.permission')::onlyTrashed()->where('_id', $id)->get();
+        $item = config('roles.models.permission')::onlyTrashed()->where('id', $id)->get();
         if (count($item) != 1) {
             return abort(redirect('laravelroles::roles.index')
                 ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedPermissionNotFound')));
@@ -146,7 +146,7 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getDeletedRole($id)
     {
-        $item = config('roles.models.role')::onlyTrashed()->where('_id', $id)->get();
+        $item = config('roles.models.role')::onlyTrashed()->where('id', $id)->get();
         if (count($item) != 1) {
             return abort(redirect('laravelroles::roles.index')
                 ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedRoleNotFound')));
@@ -252,7 +252,7 @@ trait RolesAndPermissionsHelpersTrait
     {
         $query = DB::table(config('roles.permissionsRoleTable'));
         if ($roleId) {
-            $query->where('role_id', '=', $roleId);
+            $query->where('roleid', '=', $roleId);
         }
 
         return $query->get();
@@ -269,7 +269,7 @@ trait RolesAndPermissionsHelpersTrait
     {
         $query = DB::table(config('roles.permissionsUserTable'));
         if ($permissionId) {
-            $query->where('permission_id', '=', $permissionId);
+            $query->where('permissionid', '=', $permissionId);
         }
 
         return $query->get();
@@ -306,7 +306,7 @@ trait RolesAndPermissionsHelpersTrait
         $data = [];
 
         foreach ($sortedPermissionsRolesUsers as $item) {
-            if ($item['permission']->_id === $permission->_id) {
+            if ($item['permission']->id === $permission->id) {
                 $data = [
                     'item' => $item,
                 ];
@@ -330,7 +330,7 @@ trait RolesAndPermissionsHelpersTrait
 
         if (count($permissionPivots) != 0) {
             foreach ($permissionPivots as $permissionPivot) {
-                $permissions[] = $this->getPermission($permissionPivot->permission_id);
+                $permissions[] = $this->getPermission($permissionPivot->permissionid);
             }
         }
 
@@ -351,7 +351,7 @@ trait RolesAndPermissionsHelpersTrait
 
         if (count($permissionPivots) != 0) {
             foreach ($permissionPivots as $permissionPivot) {
-                $permissionIds[] = $permissionPivot->permission_id;
+                $permissionIds[] = $permissionPivot->permissionid;
             }
         }
 
@@ -372,8 +372,8 @@ trait RolesAndPermissionsHelpersTrait
         $users = [];
 
         if ($roleId) {
-            //$queryRolesPivot->where('role_id', '=', $roleId);
-            $queryRoles->where('_id', '=', $roleId);
+            //$queryRolesPivot->where('roleid', '=', $roleId);
+            $queryRoles->where('id', '=', $roleId);
         }
 
         //$pivots = $queryRolesPivot->get();
@@ -381,14 +381,14 @@ trait RolesAndPermissionsHelpersTrait
 
         /*if ($pivots->count() > 0) {
             foreach ($pivots as $pivot) {
-                $users[] = $this->getUser($pivot->user_id);
+                $users[] = $this->getUser($pivot->userid);
             }
         }*/
         if ($roles)
             foreach ($roles as $role)
-                if (isset($role->users_ids))
-                    foreach ($role->users_ids as $user_id)
-                        $users[] = $this->getUser($user_id);
+                if (isset($role->usersids))
+                    foreach ($role->usersids as $userid)
+                        $users[] = $this->getUser($userid);
 
         return $users;
     }
@@ -418,30 +418,30 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getAllUsersForPermission($permission)
     {
-        $roles = DB::table('roles')->where('permission_ids', $permission->_id)->pluck('user_ids');
-        $user_ids = [];
+        /*$roles = DB::table('roles')->where('permissionids', $permission->id)->pluck('userids');
+        $userids = [];
         foreach ($roles as $role)
-            $user_ids = array_merge($user_ids, $role);
+            $userids = array_merge($userids, $role);
 
-        $user_ids = array_map(function ($id) {
+        $userids = array_map(function ($id) {
             return new ObjectId($id);
-        }, array_unique($user_ids));
-        $users = DB::table('users')->where(['_id' => ['$in' => $user_ids]])->get();
-        return $users;
-        /*$roles = $permission->roles()->get();
+        }, array_unique($userids));
+        $users = DB::table('users')->where(['id' => ['$in' => $userids]])->get();
+        return $users;*/
+        $roles = $permission->roles()->get();
         $users = [];
         foreach ($roles as $role) {
-            $users[] = $this->getRoleUsers($role->_id);
+            $users[] = $this->getRoleUsers($role->id);
         }
         $users = array_shift($users);
-        $permissionUserPivots = $this->getPermissionUsers($permission->_id);
+        $permissionUserPivots = $this->getPermissionUsers($permission->id);
         if ($permissionUserPivots->count() > 0) {
             foreach ($permissionUserPivots as $permissionUserPivot) {
-                $users[] = $this->getUser($permissionUserPivot->user_id);
+                $users[] = $this->getUser($permissionUserPivot->userid);
             }
         }
 
-        return collect($users)->unique();*/
+        return collect($users)->unique();
     }
 
     /**
@@ -570,9 +570,9 @@ trait RolesAndPermissionsHelpersTrait
     {
         $roles = [];
         foreach ($permissionsAndRolesPivot as $permissionAndRoleKey => $permissionAndRoleValue) {
-            if ($permission->_id === $permissionAndRoleValue->permission_id) {
+            if ($permission->id === $permissionAndRoleValue->permissionid) {
                 foreach ($sortedRolesWithUsers as $sortedRolesWithUsersItemKey => $sortedRolesWithUsersItemValue) {
-                    if ($sortedRolesWithUsersItemValue['role']->_id === $permissionAndRoleValue->role_id) {
+                    if ($sortedRolesWithUsersItemValue['role']->id === $permissionAndRoleValue->roleid) {
                         $roles[] = $sortedRolesWithUsersItemValue['role'];
                     }
                 }
@@ -600,9 +600,9 @@ trait RolesAndPermissionsHelpersTrait
 
         // Get Users from permissions associated with roles
         foreach ($permissionsAndRolesPivot as $permissionsAndRolesPivotItemKey => $permissionsAndRolesPivotItemValue) {
-            if ($permission->_id === $permissionsAndRolesPivotItemValue->permission_id) {
+            if ($permission->id === $permissionsAndRolesPivotItemValue->permissionid) {
                 foreach ($sortedRolesWithUsers as $sortedRolesWithUsersItemKey => $sortedRolesWithUsersItemValue) {
-                    if ($permissionsAndRolesPivotItemValue->role_id === $sortedRolesWithUsersItemValue['role']->_id) {
+                    if ($permissionsAndRolesPivotItemValue->roleid === $sortedRolesWithUsersItemValue['role']->id) {
                         foreach ($sortedRolesWithUsersItemValue['users'] as $sortedRolesWithUsersItemValueUser) {
                             $users[] = $sortedRolesWithUsersItemValueUser;
                         }
@@ -613,14 +613,14 @@ trait RolesAndPermissionsHelpersTrait
 
         // Setup Users IDs from permissions associated with roles
         foreach ($users as $userKey => $userValue) {
-            $userIds[] = $userValue->_id;
+            $userIds[] = $userValue->id;
         }
 
         // Get Users from permissions pivot table that are not already in users from permissions associated with roles
         foreach ($permissionUsersPivot as $permissionUsersPivotKey => $permissionUsersPivotItem) {
-            if (!in_array($permissionUsersPivotItem->user_id, $userIds) && $permission->_id === $permissionUsersPivotItem->permission_id) {
+            if (!in_array($permissionUsersPivotItem->userid, $userIds) && $permission->id === $permissionUsersPivotItem->permissionid) {
                 foreach ($appUsers as $appUser) {
-                    if ($appUser->_id === $permissionUsersPivotItem->user_id) {
+                    if ($appUser->id === $permissionUsersPivotItem->userid) {
                         $users[] = $appUser;
                     }
                 }
@@ -649,7 +649,7 @@ trait RolesAndPermissionsHelpersTrait
             ];
             foreach ($users as $user) {
                 foreach ($user->roles as $userRole) {
-                    if ($userRole->_id === $sortedUsersWithRoles[$rolekey]['role']['_id']) {
+                    if ($userRole->id === $sortedUsersWithRoles[$rolekey]['role']['id']) {
                         $sortedUsersWithRoles[$rolekey]['users'][] = $user;
                     }
                 }
@@ -683,9 +683,9 @@ trait RolesAndPermissionsHelpersTrait
 
             // Add Permission with Role
             foreach ($permissionsAndRoles as $permissionAndRole) {
-                if ($permissionAndRole->role_id == $role->_id) {
+                if ($permissionAndRole->roleid == $role->id) {
                     foreach ($permissions as $permissionKey => $permissionValue) {
-                        if ($permissionValue->_id == $permissionAndRole->permission_id) {
+                        if ($permissionValue->id == $permissionAndRole->permissionid) {
                             $sortedRolesWithPermissions[$sortedRolekey]['permissions'][] = $permissionValue;
                         }
                     }
@@ -695,7 +695,7 @@ trait RolesAndPermissionsHelpersTrait
             // Add Users with Role
             foreach ($users as $user) {
                 foreach ($user->roles as $userRole) {
-                    if ($userRole->_id === $sortedRolesWithPermissions[$sortedRolekey]['role']['_id']) {
+                    if ($userRole->id === $sortedRolesWithPermissions[$sortedRolekey]['role']['id']) {
                         $sortedRolesWithPermissions[$sortedRolekey]['users'][] = $user;
                     }
                 }
@@ -777,7 +777,7 @@ trait RolesAndPermissionsHelpersTrait
         $sortedPermissionsRolesUsers = $this->getSortedPermissonsWithRolesAndUsers($sortedRolesWithUsers, $permissions, $users);
 
         foreach ($sortedPermissionsRolesUsers as $sortedPermissionsRolesUsersKey => $sortedPermissionsRolesUsersItem) {
-            if ($sortedPermissionsRolesUsersItem['permission']->_id === $permission->_id) {
+            if ($sortedPermissionsRolesUsersItem['permission']->id === $permission->id) {
 
                 // Remove Permission from roles
                 foreach ($sortedPermissionsRolesUsersItem['roles'] as $permissionRoleKey => $permissionRoleItem) {
@@ -807,7 +807,7 @@ trait RolesAndPermissionsHelpersTrait
         if ($rolePermissions) {
             $permissionIds = [];
             foreach ($rolePermissions as $permission) {
-                $permissionIds[] = json_decode($permission)->_id;
+                $permissionIds[] = json_decode($permission)->id;
             }
             $role->syncPermissions($permissionIds);
         }
@@ -835,7 +835,7 @@ trait RolesAndPermissionsHelpersTrait
         if ($rolePermissions) {
             $permissionIds = [];
             foreach ($rolePermissions as $permission) {
-                $permissionIds[] = json_decode($permission)->_id;
+                $permissionIds[] = json_decode($permission)->id;
             }
             $role->syncPermissions($permissionIds);
         }
