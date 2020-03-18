@@ -130,7 +130,7 @@ trait RolesAndPermissionsHelpersTrait
         $item = config('roles.models.permission')::onlyTrashed()->where('id', $id)->get();
         if (count($item) != 1) {
             return abort(redirect('laravelroles::roles.index')
-                            ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedPermissionNotFound')));
+                ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedPermissionNotFound')));
         }
 
         return $item[0];
@@ -148,7 +148,7 @@ trait RolesAndPermissionsHelpersTrait
         $item = config('roles.models.role')::onlyTrashed()->where('id', $id)->get();
         if (count($item) != 1) {
             return abort(redirect('laravelroles::roles.index')
-                            ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedRoleNotFound')));
+                ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedRoleNotFound')));
         }
 
         return $item[0];
@@ -366,20 +366,28 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getRoleUsers($roleId)
     {
-        $queryRolesPivot = DB::table(config('roles.roleUserTable'));
+        //$queryRolesPivot = DB::table(config('roles.roleUserTable'));
+        $queryRoles = DB::table(config('roles.rolesTable'));
         $users = [];
 
         if ($roleId) {
-            $queryRolesPivot->where('role_id', '=', $roleId);
+            //$queryRolesPivot->where('role_id', '=', $roleId);
+            $queryRoles->where('_id', '=', $roleId);
         }
 
-        $pivots = $queryRolesPivot->get();
+        //$pivots = $queryRolesPivot->get();
+        $roles = $queryRoles->get();
 
-        if ($pivots->count() > 0) {
+        /*if ($pivots->count() > 0) {
             foreach ($pivots as $pivot) {
                 $users[] = $this->getUser($pivot->user_id);
             }
-        }
+        }*/
+        if ($roles)
+            foreach ($roles as $role)
+                if (isset($role->users_ids))
+                    foreach ($role->users_ids as $user_id)
+                        $users[] = $this->getUser($user_id);
 
         return $users;
     }
