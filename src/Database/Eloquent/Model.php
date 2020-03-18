@@ -1,6 +1,6 @@
 <?php
 
-namespace jeremykenedy\Database\Eloquent;
+namespace jeremykenedy\LaravelRoles\Database\Eloquent;
 
 //use Illuminate\Database\Eloquent\Model as dbModel;
 use Jenssegers\Mongodb\Eloquent\Model as dbModel;

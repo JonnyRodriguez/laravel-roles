@@ -1,6 +1,6 @@
 <?php
 
-namespace jeremykenedy\Database\Eloquent;
+namespace jeremykenedy\LaravelRoles\Database\Eloquent;
 
 //use Illuminate\Database\Eloquent\SoftDeletes as dbSoftDeletes;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes as dbSoftDeletes;

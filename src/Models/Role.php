@@ -2,8 +2,8 @@
 
 namespace jeremykenedy\LaravelRoles\Models;
 
-use jeremykenedy\Database\Eloquent\Model;
-use jeremykenedy\Database\Eloquent\SoftDeletes;
+use jeremykenedy\LaravelRoles\Database\Eloquent\Model;
+use jeremykenedy\LaravelRoles\Database\Eloquent\SoftDeletes;
 
 //use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Database\Eloquent\SoftDeletes;
