@@ -3,6 +3,7 @@
 namespace jeremykenedy\LaravelRoles\Traits;
 
 use Illuminate\Support\Facades\DB;
+use MongoDB\BSON\ObjectId;
 
 trait RolesAndPermissionsHelpersTrait
 {
@@ -127,7 +128,7 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getDeletedPermission($id)
     {
-        $item = config('roles.models.permission')::onlyTrashed()->where('id', $id)->get();
+        $item = config('roles.models.permission')::onlyTrashed()->where('_id', $id)->get();
         if (count($item) != 1) {
             return abort(redirect('laravelroles::roles.index')
                 ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedPermissionNotFound')));
@@ -145,7 +146,7 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getDeletedRole($id)
     {
-        $item = config('roles.models.role')::onlyTrashed()->where('id', $id)->get();
+        $item = config('roles.models.role')::onlyTrashed()->where('_id', $id)->get();
         if (count($item) != 1) {
             return abort(redirect('laravelroles::roles.index')
                 ->with('error', trans('laravelroles::laravelroles.errors.errorDeletedRoleNotFound')));
@@ -417,7 +418,17 @@ trait RolesAndPermissionsHelpersTrait
      */
     public function getAllUsersForPermission($permission)
     {
-        $roles = $permission->roles()->get();
+        $roles = DB::table('roles')->where('permission_ids', $permission)->pluck('user_ids');
+        $user_ids = [];
+        foreach ($roles as $role)
+            $user_ids = array_merge($user_ids, $role);
+
+        $user_ids = array_map(function ($id) {
+            return new ObjectId($id);
+        }, array_unique($user_ids));
+        $users = DB::table('user')->where(['_id' => ['$in' => $user_ids]])->get();
+        return $users;
+        /*$roles = $permission->roles()->get();
         $users = [];
         foreach ($roles as $role) {
             $users[] = $this->getRoleUsers($role->_id);
@@ -430,7 +441,7 @@ trait RolesAndPermissionsHelpersTrait
             }
         }
 
-        return collect($users)->unique();
+        return collect($users)->unique();*/
     }
 
     /**
